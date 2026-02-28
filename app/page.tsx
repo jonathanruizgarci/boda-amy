@@ -12,81 +12,61 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
-  const handleUploadComplete = () => {
-    setTimeout(() => refetch(), 800)
-  }
-
+  const handleUploadComplete = () => setTimeout(() => refetch(), 800)
   const lightboxOpen = lightboxIndex !== null
 
   return (
-    <main className="min-h-screen" style={{ background: 'linear-gradient(135deg, #fff5f7 0%, #ffffff 50%, #fff0f5 100%)' }}>
-      {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-md border-b" style={{ background: 'rgba(255,255,255,0.75)', borderColor: 'rgba(244,114,182,0.15)' }}>
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" role="img" aria-label="anillo">💍</span>
-            <div>
-              <h1
-                className="text-lg font-bold leading-tight tracking-wide"
-                style={{
-                  fontFamily: 'var(--font-playfair), Georgia, serif',
-                  background: 'linear-gradient(135deg, #9f1239 0%, #be185d 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Amy &amp; Jonathan
-              </h1>
-              <p className="text-xs font-medium leading-tight tracking-widest uppercase" style={{ color: '#d4a853', letterSpacing: '0.12em' }}>
-                Galería de momentos
-              </p>
-            </div>
+    <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
+
+      {/* ── HEADER ── */}
+      <header
+        className="sticky top-0 z-40"
+        style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border)' }}
+      >
+        <div className="max-w-5xl mx-auto px-5" style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+          {/* Names — elegant serif */}
+          <div style={{ lineHeight: 1 }}>
+            <h1
+              className="font-playfair"
+              style={{ fontSize: '1.5rem', fontWeight: 400, letterSpacing: '0.03em', color: 'var(--text)', fontStyle: 'italic' }}
+            >
+              Amy <span style={{ fontStyle: 'normal', fontWeight: 300, opacity: 0.35, margin: '0 4px' }}>&</span> Jair
+            </h1>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border" style={{ background: 'rgba(159,18,57,0.04)', borderColor: 'rgba(159,18,57,0.12)' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-medium" style={{ color: '#9f1239', opacity: 0.7 }}>En vivo</span>
+
+          {/* Live indicator */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+            <span style={{ fontSize: '0.7rem', letterSpacing: '0.12em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>En vivo</span>
           </div>
         </div>
       </header>
 
-      {/* Content */}
+      {/* ── THIN RULE ── */}
+      <div style={{ height: '1px', background: 'var(--border)', opacity: 0.5 }} />
+
+      {/* ── CONTENT ── */}
       <div className="max-w-5xl mx-auto pb-28">
         {!loading && photos.length > 0 && (
-          <div className="text-center py-5">
-            <p className="text-sm" style={{ color: '#be185d', opacity: 0.7 }}>
-              ✨{' '}
-              <span className="font-semibold">{photos.length}</span>{' '}
-              {photos.length === 1 ? 'foto compartida' : 'fotos compartidas'}
-              {' '}&middot; Toca una foto para verla completa
-            </p>
-          </div>
+          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '18px 0 8px', textTransform: 'uppercase' }}>
+            {photos.length} {photos.length === 1 ? 'momento' : 'momentos'} · toca para ampliar
+          </p>
         )}
 
         {error && (
-          <div className="mx-4 mt-4 p-3 rounded-xl text-sm text-center" style={{ background: '#fff1f2', color: '#be185d', border: '1px solid #fecdd3' }}>
+          <div style={{ margin: '12px 16px', padding: '12px', border: '1px solid #e5e5e5', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center' }}>
             {error}
           </div>
         )}
 
-        <PhotoGrid
-          photos={photos}
-          loading={loading}
-          onPhotoClick={(index) => setLightboxIndex(index)}
-        />
+        <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
       </div>
 
-      {/* FAB — hidden when lightbox is open */}
-      {!lightboxOpen && (
-        <UploadButton onClick={() => setModalOpen(true)} />
-      )}
+      {!lightboxOpen && <UploadButton onClick={() => setModalOpen(true)} />}
 
-      <UploadModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onUploadComplete={handleUploadComplete}
-      />
+      <UploadModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onUploadComplete={handleUploadComplete} />
 
-      {/* Lightbox */}
       {lightboxOpen && (
         <PhotoLightbox
           photos={photos}

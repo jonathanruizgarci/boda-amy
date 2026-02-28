@@ -13,27 +13,21 @@ export function UploadButton({ onClick, disabled }: UploadButtonProps) {
             onClick={onClick}
             disabled={disabled}
             aria-label="Subir foto"
-            className="
-        fixed bottom-6 right-6 z-50
-        flex items-center gap-2.5
-        text-white
-        px-5 py-4 rounded-full
-        hover:scale-105
-        active:scale-95
-        transition-all duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
-        font-semibold text-sm
-      "
             style={{
-                background: 'linear-gradient(135deg, #9f1239 0%, #be185d 60%, #db2777 100%)',
-                boxShadow: '0 8px 32px rgba(159,18,57,0.45), 0 2px 8px rgba(159,18,57,0.2)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                fontFamily: 'var(--font-geist), sans-serif',
-                letterSpacing: '0.01em',
+                position: 'fixed', bottom: '24px', right: '20px', zIndex: 50,
+                display: 'flex', alignItems: 'center', gap: '8px',
+                background: '#0a0a0a', color: '#ffffff',
+                padding: '13px 22px', borderRadius: '100px',
+                border: 'none', cursor: 'pointer',
+                fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.06em',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                transition: 'transform 0.15s, opacity 0.15s',
             }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
         >
-            <Camera className="w-5 h-5" strokeWidth={2} />
-            <span>Subir foto</span>
+            <Camera size={15} strokeWidth={1.8} />
+            <span style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>Subir</span>
         </button>
     )
 }

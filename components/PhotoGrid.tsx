@@ -12,9 +12,9 @@ interface PhotoGridProps {
 export function PhotoGrid({ photos, loading, onPhotoClick }: PhotoGridProps) {
     if (loading) {
         return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 p-3">
                 {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="aspect-square rounded-2xl animate-pulse" style={{ background: 'rgba(244,114,182,0.12)' }} />
+                    <div key={i} className="aspect-square animate-pulse" style={{ background: '#f0f0f0', borderRadius: '16px' }} />
                 ))}
             </div>
         )
@@ -22,30 +22,22 @@ export function PhotoGrid({ photos, loading, onPhotoClick }: PhotoGridProps) {
 
     if (photos.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
-                <div className="text-6xl mb-4 animate-bounce">💍</div>
-                <h2
-                    className="text-2xl font-bold mb-2"
-                    style={{ fontFamily: 'var(--font-playfair), Georgia, serif', color: '#be185d' }}
-                >
-                    ¡Sé el primero!
-                </h2>
-                <p className="text-sm max-w-xs" style={{ color: '#9ca3af' }}>
-                    Aún no hay fotos. Toca el botón de abajo y comparte un momento especial del gran día.
+            <div className="flex flex-col items-center justify-center py-28 px-8 text-center gap-4">
+                <p className="font-playfair text-2xl italic" style={{ color: 'var(--text)' }}>
+                    Sé el primero
+                </p>
+                <div style={{ width: '32px', height: '1px', background: 'var(--border)' }} />
+                <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>
+                    Comparte un momento especial del gran día tocando el botón de abajo.
                 </p>
             </div>
         )
     }
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 p-3">
             {photos.map((photo, index) => (
-                <PhotoCard
-                    key={photo.id}
-                    photo={photo}
-                    priority={index < 4}
-                    onClick={() => onPhotoClick(index)}
-                />
+                <PhotoCard key={photo.id} photo={photo} priority={index < 4} onClick={() => onPhotoClick(index)} />
             ))}
         </div>
     )

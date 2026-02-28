@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
-import { X, ImagePlus, Loader2, CheckCircle2, AlertCircle, Images } from 'lucide-react'
+import { X, ImagePlus, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 import { usePhotoUpload } from '@/hooks/usePhotoUpload'
 
 interface UploadModalProps {
@@ -14,7 +14,6 @@ interface FilePreview {
     file: File
     previewUrl: string
     status: 'pending' | 'uploading' | 'done' | 'error'
-    error?: string
 }
 
 export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalProps) {
@@ -23,81 +22,55 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
     const [uploaderName, setUploaderName] = useState('')
     const [isUploading, setIsUploading] = useState(false)
     const [allDone, setAllDone] = useState(false)
-    const [currentUploadIndex, setCurrentUploadIndex] = useState(0)
+    const [currentIndex, setCurrentIndex] = useState(0)
     const { upload, reset } = usePhotoUpload()
 
-    // Auto-close 2s after all done
     useEffect(() => {
         if (allDone) {
-            const t = setTimeout(() => handleClose(), 2000)
+            const t = setTimeout(() => handleClose(), 2200)
             return () => clearTimeout(t)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allDone])
 
     const handleClose = () => {
         if (isUploading) return
-        // Cleanup preview URLs
         files.forEach(f => URL.revokeObjectURL(f.previewUrl))
-        setFiles([])
-        setUploaderName('')
-        setIsUploading(false)
-        setAllDone(false)
-        setCurrentUploadIndex(0)
-        reset()
-        onClose()
+        setFiles([]); setUploaderName(''); setIsUploading(false)
+        setAllDone(false); setCurrentIndex(0); reset(); onClose()
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selected = Array.from(e.target.files ?? [])
         if (!selected.length) return
-        // Clean up old previews
         files.forEach(f => URL.revokeObjectURL(f.previewUrl))
-        const newFiles: FilePreview[] = selected.map(file => ({
-            file,
-            previewUrl: URL.createObjectURL(file),
-            status: 'pending' as const,
-        }))
-        setFiles(newFiles)
-        setAllDone(false)
-        setCurrentUploadIndex(0)
-        reset()
+        setFiles(selected.map(file => ({ file, previewUrl: URL.createObjectURL(file), status: 'pending' as const })))
+        setAllDone(false); setCurrentIndex(0); reset()
     }
 
     const handleUpload = async () => {
         if (!files.length || isUploading) return
         setIsUploading(true)
-
         const updated = [...files]
         let successCount = 0
-
         for (let i = 0; i < updated.length; i++) {
-            setCurrentUploadIndex(i)
+            setCurrentIndex(i)
             updated[i] = { ...updated[i], status: 'uploading' }
             setFiles([...updated])
-
             const ok = await upload(updated[i].file, uploaderName)
-            if (ok) {
-                updated[i] = { ...updated[i], status: 'done' }
-                successCount++
-            } else {
-                updated[i] = { ...updated[i], status: 'error', error: 'Error al subir' }
-            }
-            setFiles([...updated])
-            reset()
+            updated[i] = { ...updated[i], status: ok ? 'done' : 'error' }
+            if (ok) successCount++
+            setFiles([...updated]); reset()
         }
-
-        setIsUploading(false)
-        setAllDone(true)
-        if (successCount > 0) {
-            onUploadComplete?.()
-        }
+        setIsUploading(false); setAllDone(true)
+        if (successCount > 0) onUploadComplete?.()
     }
 
-    const pendingCount = files.filter(f => f.status === 'pending').length
     const doneCount = files.filter(f => f.status === 'done').length
-    const errorCount = files.filter(f => f.status === 'error').length
 
     if (!isOpen) return null
+
+    const statusColor = { pending: 'transparent', uploading: 'rgba(0,0,0,0.45)', done: 'rgba(10,10,10,0.55)', error: 'rgba(200,40,40,0.45)' }
 
     return (
         <div
@@ -105,72 +78,91 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
             onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
         >
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)' }} />
 
             {/* Modal */}
-            <div className="relative w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up max-h-[90vh] flex flex-col">
+            <div
+                className="relative w-full sm:max-w-sm flex flex-col animate-slide-up"
+                style={{
+                    background: '#fff',
+                    borderRadius: '20px 20px 0 0',
+                    maxHeight: '92vh',
+                    overflow: 'hidden',
+                }}
+            >
+                {/* Handle bar */}
+                <div className="flex justify-center pt-3 pb-1">
+                    <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#e0e0e0' }} />
+                </div>
+
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
+                <div className="flex items-start justify-between px-5 pt-3 pb-4">
                     <div>
-                        <h2 className="text-lg font-bold text-slate-800">Compartir fotos 💍</h2>
-                        <p className="text-xs text-slate-400 mt-0.5">Puedes elegir varias a la vez</p>
+                        <h2 className="font-playfair text-xl italic" style={{ color: 'var(--text)' }}>
+                            Compartir fotos
+                        </h2>
+                        <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            Selecciona una o varias imágenes
+                        </p>
                     </div>
                     <button
                         onClick={handleClose}
                         disabled={isUploading}
-                        className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors disabled:opacity-40"
+                        style={{
+                            background: '#f5f5f5', border: 'none', borderRadius: '50%',
+                            width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)',
+                        }}
                     >
-                        <X className="w-5 h-5" />
+                        <X size={15} />
                     </button>
                 </div>
 
-                <div className="px-5 pb-6 space-y-4 overflow-y-auto">
-                    {/* File picker */}
+                <div style={{ overflowY: 'auto', padding: '0 20px 24px' }} className="space-y-4">
+                    {/* File picker or preview grid */}
                     {files.length === 0 ? (
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full aspect-video rounded-2xl border-2 border-dashed border-rose-200 flex flex-col items-center justify-center gap-2 bg-rose-50/40 hover:bg-rose-50/70 transition-colors duration-200"
+                            style={{
+                                width: '100%', aspectRatio: '16/9',
+                                border: '1.5px dashed #d4d4d4', borderRadius: '14px',
+                                background: '#fafafa', cursor: 'pointer',
+                                display: 'flex', flexDirection: 'column',
+                                alignItems: 'center', justifyContent: 'center', gap: '10px',
+                            }}
                         >
-                            <Images className="w-10 h-10 text-rose-300" />
-                            <span className="text-sm text-rose-400 font-medium">Toca para elegir fotos</span>
-                            <span className="text-xs text-slate-400">Puedes seleccionar varias · Solo imágenes · Máx. 2 MB c/u</span>
+                            <ImagePlus size={28} color="#aaa" strokeWidth={1.5} />
+                            <span style={{ fontSize: '0.82rem', color: '#aaa' }}>Toca para elegir fotos</span>
+                            <span style={{ fontSize: '0.68rem', color: '#c8c8c8' }}>Solo imágenes · Máx. 2 MB cada una</span>
                         </button>
                     ) : (
-                        /* File preview grid */
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-slate-600">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                                     {files.length} {files.length === 1 ? 'foto' : 'fotos'} seleccionadas
                                 </span>
                                 {!isUploading && !allDone && (
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="text-xs text-rose-500 hover:text-rose-600 font-medium"
+                                        style={{ fontSize: '0.72rem', color: 'var(--text)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
                                     >
                                         Cambiar
                                     </button>
                                 )}
                             </div>
-                            <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
                                 {files.map((fp, i) => (
-                                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-slate-100">
+                                    <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '10px', overflow: 'hidden', background: '#f0f0f0' }}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={fp.previewUrl} alt="" className="w-full h-full object-cover" />
-                                        {/* Status overlay */}
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all ${fp.status === 'pending' ? 'bg-transparent' :
-                                                fp.status === 'uploading' ? 'bg-black/40' :
-                                                    fp.status === 'done' ? 'bg-emerald-500/40' :
-                                                        'bg-red-500/40'
-                                            }`}>
-                                            {fp.status === 'uploading' && (
-                                                <Loader2 className="w-5 h-5 text-white animate-spin" />
-                                            )}
-                                            {fp.status === 'done' && (
-                                                <CheckCircle2 className="w-5 h-5 text-white" />
-                                            )}
-                                            {fp.status === 'error' && (
-                                                <AlertCircle className="w-5 h-5 text-white" />
-                                            )}
+                                        <img src={fp.previewUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <div style={{
+                                            position: 'absolute', inset: 0, background: statusColor[fp.status],
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            transition: 'background 0.2s',
+                                        }}>
+                                            {fp.status === 'uploading' && <Loader2 size={18} color="#fff" className="animate-spin" />}
+                                            {fp.status === 'done' && <CheckCircle2 size={18} color="#fff" />}
+                                            {fp.status === 'error' && <AlertCircle size={18} color="#fff" />}
                                         </div>
                                     </div>
                                 ))}
@@ -178,20 +170,12 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
                         </div>
                     )}
 
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={handleFileChange}
-                        disabled={isUploading}
-                    />
+                    <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} disabled={isUploading} />
 
-                    {/* Name input */}
+                    {/* Name */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1.5">
-                            Tu nombre <span className="text-slate-400 font-normal">(opcional)</span>
+                        <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                            Tu nombre <span style={{ opacity: 0.5 }}>(opcional)</span>
                         </label>
                         <input
                             type="text"
@@ -200,58 +184,58 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
                             placeholder="Ej: María y Carlos"
                             maxLength={50}
                             disabled={isUploading}
-                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent transition-all disabled:opacity-50"
+                            style={{
+                                width: '100%', padding: '10px 14px', borderRadius: '10px',
+                                border: '1px solid var(--border)', fontSize: '0.85rem',
+                                color: 'var(--text)', outline: 'none', background: '#fafafa',
+                                boxSizing: 'border-box',
+                            }}
                         />
                     </div>
 
-                    {/* Upload progress */}
+                    {/* Progress */}
                     {isUploading && (
-                        <div className="bg-rose-50 rounded-xl px-4 py-3 space-y-1">
-                            <div className="flex justify-between text-xs text-slate-500">
-                                <span>☁️ Subiendo foto {currentUploadIndex + 1} de {files.length}...</span>
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                                <span>Subiendo {currentIndex + 1} de {files.length}…</span>
                                 <span>{doneCount}/{files.length}</span>
                             </div>
-                            <div className="w-full h-1.5 bg-rose-100 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gradient-to-r from-rose-400 to-pink-500 rounded-full transition-all duration-500"
-                                    style={{ width: `${(doneCount / files.length) * 100}%` }}
-                                />
+                            <div style={{ height: '2px', background: '#f0f0f0', borderRadius: '1px' }}>
+                                <div style={{ height: '100%', background: 'var(--text)', borderRadius: '1px', width: `${(doneCount / files.length) * 100}%`, transition: 'width 0.4s ease' }} />
                             </div>
                         </div>
                     )}
 
-                    {/* All done state */}
+                    {/* Done */}
                     {allDone && (
-                        <div className="flex items-center gap-2.5 bg-emerald-50 rounded-xl px-4 py-3">
-                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                            <div>
-                                <p className="text-sm font-medium text-emerald-700">
-                                    ¡{doneCount} {doneCount === 1 ? 'foto compartida' : 'fotos compartidas'}! 🎉
-                                </p>
-                                {errorCount > 0 && (
-                                    <p className="text-xs text-red-500 mt-0.5">{errorCount} no pudieron subirse</p>
-                                )}
-                            </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: '#f5f5f5', borderRadius: '12px' }}>
+                            <CheckCircle2 size={18} color="#0a0a0a" />
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text)', fontWeight: 500 }}>
+                                {doneCount} {doneCount === 1 ? 'foto compartida' : 'fotos compartidas'} ✓
+                            </p>
                         </div>
                     )}
 
-                    {/* Action button */}
+                    {/* CTA */}
                     {!allDone && (
                         <button
                             onClick={handleUpload}
                             disabled={files.length === 0 || isUploading}
-                            className="w-full py-3.5 rounded-2xl font-semibold text-white text-sm bg-gradient-to-br from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                            style={{
+                                width: '100%', padding: '14px',
+                                background: files.length === 0 || isUploading ? '#e0e0e0' : 'var(--text)',
+                                color: files.length === 0 || isUploading ? '#aaa' : '#fff',
+                                borderRadius: '12px', border: 'none',
+                                fontSize: '0.82rem', fontWeight: 500,
+                                letterSpacing: '0.06em', textTransform: 'uppercase',
+                                cursor: files.length === 0 || isUploading ? 'not-allowed' : 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                transition: 'background 0.2s',
+                            }}
                         >
-                            {isUploading ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Subiendo {currentUploadIndex + 1}/{files.length}...</span>
-                                </>
-                            ) : (
-                                <span>
-                                    ✨ {files.length > 1 ? `Compartir ${files.length} fotos` : 'Compartir foto'}
-                                </span>
-                            )}
+                            {isUploading
+                                ? <><Loader2 size={15} className="animate-spin" /> Subiendo…</>
+                                : files.length > 1 ? `Compartir ${files.length} fotos` : 'Compartir foto'}
                         </button>
                     )}
                 </div>

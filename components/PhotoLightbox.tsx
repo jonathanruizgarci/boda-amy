@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useCallback, useRef, useState } from 'react'
 import Image from 'next/image'
 import { X, Download, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Photo } from '@/types/database'
@@ -12,18 +12,43 @@ interface PhotoLightboxProps {
     onNavigate: (index: number) => void
 }
 
+function getPinchDistance(x1: number, y1: number, x2: number, y2: number) {
+    const dx = x1 - x2
+    const dy = y1 - y2
+    return Math.sqrt(dx * dx + dy * dy)
+}
+
 export function PhotoLightbox({ photos, currentIndex, onClose, onNavigate }: PhotoLightboxProps) {
     const photo = photos[currentIndex]
     const hasPrev = currentIndex > 0
     const hasNext = currentIndex < photos.length - 1
-    const touchStartX = useRef<number | null>(null)
 
-    // Keyboard navigation
+    // Zoom state
+    const [zoom, setZoom] = useState(1)
+    const [panX, setPanX] = useState(0)
+    const [panY, setPanY] = useState(0)
+
+    // Touch refs
+    const touchStartX = useRef<number | null>(null)
+    const pinchStartDist = useRef<number | null>(null)
+    const pinchStartZoom = useRef(1)
+    const lastTap = useRef(0)
+    const dragStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 })
+    const isPanning = useRef(false)
+
+    // Reset zoom when photo changes
+    useEffect(() => {
+        setZoom(1); setPanX(0); setPanY(0)
+    }, [currentIndex])
+
+    // Keyboard
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose()
-        if (e.key === 'ArrowLeft' && hasPrev) onNavigate(currentIndex - 1)
-        if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1)
-    }, [currentIndex, hasPrev, hasNext, onClose, onNavigate])
+        if (zoom === 1) {
+            if (e.key === 'ArrowLeft' && hasPrev) onNavigate(currentIndex - 1)
+            if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1)
+        }
+    }, [currentIndex, hasPrev, hasNext, onClose, onNavigate, zoom])
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown)
@@ -34,85 +59,140 @@ export function PhotoLightbox({ photos, currentIndex, onClose, onNavigate }: Pho
         }
     }, [handleKeyDown])
 
-    // Touch / swipe handlers
+    // Double-tap to zoom
+    const handleImageClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        const now = Date.now()
+        if (now - lastTap.current < 300) {
+            if (zoom > 1) { setZoom(1); setPanX(0); setPanY(0) }
+            else setZoom(2.5)
+        }
+        lastTap.current = now
+    }
+
+    // Touch handlers
     const handleTouchStart = (e: React.TouchEvent) => {
-        touchStartX.current = e.touches[0].clientX
+        if (e.touches.length === 2) {
+            pinchStartDist.current = getPinchDistance(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY)
+            pinchStartZoom.current = zoom
+            isPanning.current = false
+        } else if (e.touches.length === 1) {
+            const t = e.touches[0]
+            if (zoom > 1) {
+                dragStart.current = { x: t.clientX, y: t.clientY, panX, panY }
+                isPanning.current = true
+            } else {
+                touchStartX.current = t.clientX
+                isPanning.current = false
+            }
+        }
+    }
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (e.touches.length === 2 && pinchStartDist.current !== null) {
+            e.preventDefault()
+            const dist = getPinchDistance(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY)
+            const next = Math.min(4, Math.max(1, pinchStartZoom.current * (dist / pinchStartDist.current)))
+            setZoom(next)
+            if (next <= 1) { setPanX(0); setPanY(0) }
+        } else if (isPanning.current && e.touches.length === 1 && zoom > 1) {
+            e.preventDefault()
+            const dx = e.touches[0].clientX - dragStart.current.x
+            const dy = e.touches[0].clientY - dragStart.current.y
+            setPanX(dragStart.current.panX + dx)
+            setPanY(dragStart.current.panY + dy)
+        }
     }
 
     const handleTouchEnd = (e: React.TouchEvent) => {
-        if (touchStartX.current === null) return
-        const deltaX = e.changedTouches[0].clientX - touchStartX.current
-        touchStartX.current = null
-        const THRESHOLD = 50
-        if (deltaX < -THRESHOLD && hasNext) onNavigate(currentIndex + 1)
-        if (deltaX > THRESHOLD && hasPrev) onNavigate(currentIndex - 1)
+        if (e.touches.length < 2) pinchStartDist.current = null
+        if (e.touches.length === 0 && !isPanning.current && zoom <= 1 && touchStartX.current !== null) {
+            const deltaX = e.changedTouches[0].clientX - touchStartX.current
+            if (deltaX < -50 && hasNext) onNavigate(currentIndex + 1)
+            else if (deltaX > 50 && hasPrev) onNavigate(currentIndex - 1)
+            touchStartX.current = null
+        }
+        if (e.touches.length === 0) isPanning.current = false
     }
 
     const handleDownload = async () => {
         try {
-            const response = await fetch(photo.image_url)
-            const blob = await response.blob()
+            const res = await fetch(photo.image_url)
+            const blob = await res.blob()
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
-            a.href = url
-            a.download = `boda-foto-${photo.id.slice(0, 8)}.jpg`
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(url)
-        } catch {
-            window.open(photo.image_url, '_blank')
-        }
+            a.href = url; a.download = `boda-${photo.id.slice(0, 8)}.jpg`
+            document.body.appendChild(a); a.click()
+            document.body.removeChild(a); URL.revokeObjectURL(url)
+        } catch { window.open(photo.image_url, '_blank') }
     }
 
     if (!photo) return null
 
-    return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center select-none"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-        >
-            {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/95" onClick={onClose} />
+    const isZoomed = zoom > 1
 
-            {/* Top bar */}
-            <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/70 to-transparent">
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#000' }}>
+
+            {/* Top controls */}
+            <div
+                className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3"
+                style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%)' }}
+            >
                 <div>
                     {photo.uploader_name && (
-                        <p className="text-white/90 text-sm font-medium" style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                            📸 {photo.uploader_name}
+                        <p className="font-playfair text-sm italic" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                            {photo.uploader_name}
                         </p>
                     )}
-                    <p className="text-white/40 text-xs">
-                        {currentIndex + 1} de {photos.length}
+                    <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>
+                        {currentIndex + 1} / {photos.length}
+                        {isZoomed && '  · doble toque para restablecer'}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                         onClick={handleDownload}
-                        className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-full text-sm font-medium transition-all border border-white/20 backdrop-blur-sm"
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)',
+                            color: '#fff', borderRadius: '100px', padding: '7px 14px',
+                            fontSize: '0.75rem', cursor: 'pointer', backdropFilter: 'blur(8px)',
+                        }}
                     >
-                        <Download className="w-4 h-4" />
+                        <Download size={13} />
                         <span className="hidden sm:inline">Descargar</span>
                     </button>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/20 backdrop-blur-sm"
+                        style={{
+                            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)',
+                            color: '#fff', borderRadius: '100%', padding: '8px',
+                            cursor: 'pointer', backdropFilter: 'blur(8px)',
+                        }}
                     >
-                        <X className="w-5 h-5" />
+                        <X size={16} />
                     </button>
                 </div>
             </div>
 
-            {/* Image */}
+            {/* Full-screen image with zoom and pan */}
             <div
-                className="relative w-full h-full flex items-center justify-center p-14 sm:p-16"
-                onClick={onClose}
+                className="absolute inset-0"
+                style={{ cursor: isZoomed ? 'grab' : 'zoom-in', touchAction: 'none' }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onClick={zoom === 1 ? onClose : undefined}
             >
                 <div
-                    className="relative max-w-5xl max-h-full w-full h-full"
-                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                        position: 'absolute', inset: 0,
+                        transform: `scale(${zoom}) translate(${panX / zoom}px, ${panY / zoom}px)`,
+                        transition: isPanning.current ? 'none' : 'transform 0.2s ease',
+                        willChange: 'transform',
+                    }}
+                    onClick={handleImageClick}
                 >
                     <Image
                         src={photo.image_url}
@@ -121,45 +201,56 @@ export function PhotoLightbox({ photos, currentIndex, onClose, onNavigate }: Pho
                         className="object-contain"
                         sizes="100vw"
                         priority
+                        draggable={false}
                     />
                 </div>
             </div>
 
-            {/* Swipe hint on mobile (first visit only) */}
-            {photos.length > 1 && (
-                <div className="absolute bottom-16 left-0 right-0 flex justify-center pointer-events-none">
-                    <p className="text-white/30 text-xs">← desliza para navegar →</p>
-                </div>
-            )}
-
-            {/* Prev */}
-            {hasPrev && (
+            {/* Prev button — overlaid on left side of image */}
+            {hasPrev && !isZoomed && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex - 1) }}
-                    className="absolute left-2 sm:left-4 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all border border-white/20 backdrop-blur-sm hover:scale-110 active:scale-95"
+                    style={{
+                        position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
+                        zIndex: 20, background: 'rgba(255,255,255,0.12)',
+                        border: '1px solid rgba(255,255,255,0.2)', borderRadius: '100%',
+                        padding: '10px', color: '#fff', cursor: 'pointer',
+                        backdropFilter: 'blur(8px)', transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
                 >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft size={22} strokeWidth={1.5} />
                 </button>
             )}
 
-            {/* Next */}
-            {hasNext && (
+            {/* Next button — overlaid on right side of image */}
+            {hasNext && !isZoomed && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onNavigate(currentIndex + 1) }}
-                    className="absolute right-2 sm:right-4 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all border border-white/20 backdrop-blur-sm hover:scale-110 active:scale-95"
+                    style={{
+                        position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                        zIndex: 20, background: 'rgba(255,255,255,0.12)',
+                        border: '1px solid rgba(255,255,255,0.2)', borderRadius: '100%',
+                        padding: '10px', color: '#fff', cursor: 'pointer',
+                        backdropFilter: 'blur(8px)', transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
                 >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight size={22} strokeWidth={1.5} />
                 </button>
             )}
 
-            {/* Bottom date */}
-            <div className="absolute bottom-0 left-0 right-0 px-4 py-4 bg-gradient-to-t from-black/60 to-transparent">
-                <p className="text-white/35 text-xs text-center">
-                    {new Date(photo.created_at).toLocaleString('es-MX', {
-                        day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-                    })}
+            {/* Swipe hint */}
+            {photos.length > 1 && !isZoomed && (
+                <p style={{
+                    position: 'absolute', bottom: '16px', left: 0, right: 0,
+                    textAlign: 'center', fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)',
+                    letterSpacing: '0.08em', pointerEvents: 'none',
+                }}>
                 </p>
-            </div>
+            )}
         </div>
     )
 }
