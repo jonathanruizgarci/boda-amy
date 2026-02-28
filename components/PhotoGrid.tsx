@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { PhotoCard } from '@/components/PhotoCard'
+import { PhotoLightbox } from '@/components/PhotoLightbox'
 import type { Photo } from '@/types/database'
 
 interface PhotoGridProps {
@@ -9,6 +11,8 @@ interface PhotoGridProps {
 }
 
 export function PhotoGrid({ photos, loading }: PhotoGridProps) {
+    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
     if (loading) {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
@@ -35,10 +39,26 @@ export function PhotoGrid({ photos, loading }: PhotoGridProps) {
     }
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
-            {photos.map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} />
-            ))}
-        </div>
+        <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
+                {photos.map((photo, index) => (
+                    <PhotoCard
+                        key={photo.id}
+                        photo={photo}
+                        priority={index < 4}
+                        onClick={() => setLightboxIndex(index)}
+                    />
+                ))}
+            </div>
+
+            {lightboxIndex !== null && (
+                <PhotoLightbox
+                    photos={photos}
+                    currentIndex={lightboxIndex}
+                    onClose={() => setLightboxIndex(null)}
+                    onNavigate={setLightboxIndex}
+                />
+            )}
+        </>
     )
 }

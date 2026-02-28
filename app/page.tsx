@@ -7,8 +7,14 @@ import { UploadButton } from '@/components/UploadButton'
 import { UploadModal } from '@/components/UploadModal'
 
 export default function Home() {
-  const { photos, loading, error } = usePhotos()
+  const { photos, loading, error, refetch } = usePhotos()
   const [modalOpen, setModalOpen] = useState(false)
+
+  const handleUploadComplete = () => {
+    // Realtime subscription handles new photos automatically,
+    // but we also do a manual refetch to ensure everything is in sync
+    setTimeout(() => refetch(), 800)
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50">
@@ -41,7 +47,8 @@ export default function Home() {
             <p className="text-sm text-slate-400">
               ✨{' '}
               <span className="font-semibold text-rose-500">{photos.length}</span>{' '}
-              {photos.length === 1 ? 'foto compartida' : 'fotos compartidas'}
+              {photos.length === 1 ? 'foto compartida' : 'fotos compartidas'}{' '}
+              · Toca cualquier foto para verla completa
             </p>
           </div>
         )}
@@ -60,7 +67,11 @@ export default function Home() {
       <UploadButton onClick={() => setModalOpen(true)} />
 
       {/* Upload Modal */}
-      <UploadModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <UploadModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onUploadComplete={handleUploadComplete}
+      />
     </main>
   )
 }
