@@ -194,14 +194,11 @@ export function PhotoLightbox({ photos, currentIndex, onClose, onNavigate }: Pho
                     }}
                     onClick={handleImageClick}
                 >
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                         src={photo.image_url}
                         alt={photo.uploader_name ? `Foto de ${photo.uploader_name}` : 'Foto de la boda'}
-                        fill
-                        className="object-contain"
-                        sizes="100vw"
-                        quality={95}
-                        priority
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         draggable={false}
                     />
                 </div>
