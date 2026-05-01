@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import type { Photo } from '@/types/database'
 import { PhotoCard } from '@/components/PhotoCard'
 
@@ -31,13 +30,6 @@ export function PhotoGrid({ photos, loading, onPhotoClick }: PhotoGridProps) {
                 <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>
                     Comparte un momento especial del gran día tocando el botón de abajo.
                 </p>
-                <Image
-                    src="/images/camara.jpg"
-                    alt="Wedding photography"
-                    width={160}
-                    height={160}
-                    style={{ objectFit: 'contain', width: 'auto', height: '130px', marginTop: '8px' }}
-                />
             </div>
         )
     }

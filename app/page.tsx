@@ -73,6 +73,17 @@ export default function Home() {
         <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
       </div>
 
+      {/* ── FOOTER ── */}
+      <footer style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 100px' }}>
+        <Image
+          src="/images/camara.jpg"
+          alt="Wedding photography"
+          width={160}
+          height={160}
+          style={{ objectFit: 'contain', width: 'auto', height: '110px' }}
+        />
+      </footer>
+
       {!lightboxOpen && <UploadButton onClick={() => setModalOpen(true)} />}
 
       <UploadModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onUploadComplete={handleUploadComplete} />
