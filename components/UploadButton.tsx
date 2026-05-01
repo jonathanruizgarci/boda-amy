@@ -16,7 +16,7 @@ export function UploadButton({ onClick, disabled }: UploadButtonProps) {
             style={{
                 position: 'fixed', bottom: '24px', right: '20px', zIndex: 50,
                 display: 'flex', alignItems: 'center', gap: '8px',
-                background: '#0a0a0a', color: '#ffffff',
+                background: '#7c3aed', color: '#ffffff',
                 padding: '13px 22px', borderRadius: '100px',
                 border: 'none', cursor: 'pointer',
                 fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.06em',

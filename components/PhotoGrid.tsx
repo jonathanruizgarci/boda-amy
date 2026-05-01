@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import type { Photo } from '@/types/database'
 import { PhotoCard } from '@/components/PhotoCard'
 
@@ -22,14 +23,21 @@ export function PhotoGrid({ photos, loading, onPhotoClick }: PhotoGridProps) {
 
     if (photos.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-28 px-8 text-center gap-4">
-                <p className="font-playfair text-2xl italic" style={{ color: 'var(--text)' }}>
+            <div className="flex flex-col items-center justify-center py-10 px-8 text-center gap-4">
+                <p className="font-playfair text-2xl italic" style={{ color: '#b5476a' }}>
                     Sé el primero
                 </p>
-                <div style={{ width: '32px', height: '1px', background: 'var(--border)' }} />
+                <div style={{ width: '32px', height: '1px', background: '#d4a8b8' }} />
                 <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>
                     Comparte un momento especial del gran día tocando el botón de abajo.
                 </p>
+                <Image
+                    src="/images/camara.jpg"
+                    alt="Wedding photography"
+                    width={160}
+                    height={160}
+                    style={{ objectFit: 'contain', width: 'auto', height: '130px', marginTop: '8px' }}
+                />
             </div>
         )
     }

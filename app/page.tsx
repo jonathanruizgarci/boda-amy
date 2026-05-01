@@ -20,44 +20,41 @@ export default function Home() {
     <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
 
       {/* ── HEADER ── */}
-      <header
-        className="sticky top-0 z-40"
-        style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border)' }}
-      >
-        <div className="max-w-5xl mx-auto px-5" style={{ height: '88px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-
-          {/* Spacer */}
-          <div style={{ width: '72px' }} />
-
-          {/* Floral decoration — centered */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-            <Image
-              src="/images/Flores_Boda.jpeg"
-              alt="Decoración floral"
-              width={320}
-              height={88}
-              style={{ objectFit: 'contain', height: '72px', width: 'auto' }}
-              priority
-            />
-          </div>
-
-          {/* Spacer */}
-          <div style={{ width: '72px' }} />
+      <header style={{ background: '#ddd5ea', paddingBottom: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}>
+          <Image
+            src="/images/FloresBoda.png"
+            alt="Decoración floral"
+            width={260}
+            height={120}
+            style={{ objectFit: 'contain', width: 'auto', height: '110px' }}
+            priority
+          />
         </div>
       </header>
 
-      {/* ── THIN RULE ── */}
-      <div style={{ height: '1px', background: 'var(--border)', opacity: 0.5 }} />
-
       {/* ── AMY & JAIR ── */}
-      <div style={{ textAlign: 'center', padding: '28px 0 6px' }}>
+      <div style={{ textAlign: 'center', padding: '24px 0 16px' }}>
         <h1
           className="font-playfair"
-          style={{ fontSize: '2.2rem', fontWeight: 400, letterSpacing: '0.04em', color: 'var(--text)', fontStyle: 'italic' }}
+          style={{ fontSize: '2.6rem', fontWeight: 400, letterSpacing: '0.04em', color: '#b5476a', fontStyle: 'italic' }}
         >
-          Amy <span style={{ fontStyle: 'normal', fontWeight: 300, opacity: 0.3, margin: '0 8px' }}>&</span> Jair
+          Amy <span style={{ fontWeight: 300, opacity: 0.7, margin: '0 6px' }}>&</span> Jair
         </h1>
       </div>
+
+      {/* ── COUPLE PHOTO ── */}
+      {photos.length === 0 && !loading && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 32px 8px' }}>
+          <Image
+            src="/images/AmyJair.jpeg"
+            alt="Amy y Jair"
+            width={280}
+            height={360}
+            style={{ objectFit: 'cover', borderRadius: '4px', maxHeight: '320px', width: 'auto' }}
+          />
+        </div>
+      )}
 
       {/* ── CONTENT ── */}
       <div className="max-w-5xl mx-auto pb-28">
