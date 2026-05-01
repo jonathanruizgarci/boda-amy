@@ -61,20 +61,20 @@ export default function Home() {
         </div>
       </header>
 
-      {/* ── AMY & JAIR ── */}
-      <div style={{ textAlign: 'center', padding: '20px 0 12px', flexShrink: 0 }}>
-        <h1
-          className="font-playfair"
-          style={{ fontSize: '2.6rem', fontWeight: 400, letterSpacing: '0.04em', color: '#b5476a', fontStyle: 'italic' }}
-        >
-          Amy <span style={{ fontWeight: 300, opacity: 0.7, margin: '0 6px' }}>&</span> Jair
-        </h1>
-      </div>
-
       {/* ── CONTENT ── */}
       {isEmpty ? (
-        /* Estado vacío: centrado en pantalla completa */
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0 120px' }}>
+        /* Estado vacío: Amy & Jair centrado entre línea y card */
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly', padding: '0 0 80px' }}>
+
+          {/* Amy & Jair */}
+          <h1
+            className="font-playfair"
+            style={{ fontSize: '2.6rem', fontWeight: 400, letterSpacing: '0.04em', color: '#b5476a', fontStyle: 'italic', textAlign: 'center' }}
+          >
+            Amy <span style={{ fontWeight: 300, opacity: 0.7, margin: '0 6px' }}>&</span> Jair
+          </h1>
+
+          {/* Card Sé el primero */}
           <div style={{
             background: 'rgba(255,255,255,0.45)',
             backdropFilter: 'blur(12px)',
@@ -99,6 +99,11 @@ export default function Home() {
       ) : (
         /* Con fotos: grid normal */
         <div style={{ background: 'rgba(255,255,255,0.52)', flex: 1 }}>
+          <div style={{ textAlign: 'center', padding: '20px 0 8px' }}>
+            <h1 className="font-playfair" style={{ fontSize: '2.6rem', fontWeight: 400, letterSpacing: '0.04em', color: '#b5476a', fontStyle: 'italic' }}>
+              Amy <span style={{ fontWeight: 300, opacity: 0.7, margin: '0 6px' }}>&</span> Jair
+            </h1>
+          </div>
           <div className="max-w-5xl mx-auto pb-36">
             {!loading && (
               <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
