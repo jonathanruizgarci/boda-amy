@@ -21,7 +21,10 @@ export default function Home() {
   return (
     <main style={{
       minHeight: '100dvh',
-      background: 'linear-gradient(160deg, #f5f0fb 0%, #fdf8f0 60%, #f0eef8 100%)',
+      backgroundImage: 'url(/images/AmyJair.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center top',
+      backgroundAttachment: 'fixed',
       display: 'flex',
       flexDirection: 'column',
     }}>
