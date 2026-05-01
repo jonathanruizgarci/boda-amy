@@ -20,7 +20,7 @@ export default function Home() {
     <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
 
       {/* ── HEADER ── */}
-      <header style={{ background: '#ddd5ea', paddingBottom: '12px' }}>
+      <header style={{ background: 'transparent', paddingBottom: '0' }}>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}>
           <Image
             src="/images/FloresBoda.png"
@@ -31,6 +31,12 @@ export default function Home() {
             priority
           />
         </div>
+        {/* Línea degradada lila */}
+        <div style={{
+          height: '2px',
+          background: 'linear-gradient(to right, transparent, #c4a8d8, transparent)',
+          margin: '10px 0 0',
+        }} />
       </header>
 
       {/* ── AMY & JAIR ── */}
