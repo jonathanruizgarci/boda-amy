@@ -119,22 +119,22 @@ export default function Home() {
       {!lightboxOpen && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '6px 0 8px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '8px 20px 12px',
           background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
           borderTop: '1px solid rgba(0,0,0,0.06)',
         }}>
           <Image
             src="/images/camara.jpg"
             alt="Wedding photography"
-            width={120}
-            height={60}
-            style={{ objectFit: 'contain', width: 'auto', height: '52px' }}
+            width={100}
+            height={52}
+            style={{ objectFit: 'contain', width: 'auto', height: '48px' }}
           />
+          <UploadButton onClick={() => setModalOpen(true)} />
         </div>
       )}
-
-      {!lightboxOpen && <UploadButton onClick={() => setModalOpen(true)} />}
 
       <UploadModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onUploadComplete={handleUploadComplete} />
 

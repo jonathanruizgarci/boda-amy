@@ -14,14 +14,14 @@ export function UploadButton({ onClick, disabled }: UploadButtonProps) {
             disabled={disabled}
             aria-label="Subir foto"
             style={{
-                position: 'fixed', bottom: '24px', right: '20px', zIndex: 50,
                 display: 'flex', alignItems: 'center', gap: '8px',
                 background: '#7c3aed', color: '#ffffff',
-                padding: '13px 22px', borderRadius: '100px',
+                padding: '12px 22px', borderRadius: '100px',
                 border: 'none', cursor: 'pointer',
-                fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.06em',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                fontSize: '0.8rem', fontWeight: 500,
+                boxShadow: '0 4px 16px rgba(124,58,237,0.35)',
                 transition: 'transform 0.15s, opacity 0.15s',
+                flexShrink: 0,
             }}
             onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
