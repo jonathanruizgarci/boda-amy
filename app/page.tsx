@@ -17,7 +17,13 @@ export default function Home() {
   const lightboxOpen = lightboxIndex !== null
 
   return (
-    <main className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <main className="min-h-screen" style={{
+      background: 'var(--bg)',
+      backgroundImage: 'url(/images/AmyJair.jpeg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center top',
+      backgroundAttachment: 'fixed',
+    }}>
 
       {/* ── HEADER ── */}
       <header style={{ background: 'transparent', paddingBottom: '0' }}>
@@ -49,20 +55,8 @@ export default function Home() {
         </h1>
       </div>
 
-      {/* ── COUPLE PHOTO ── */}
-      {photos.length === 0 && !loading && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 32px 8px' }}>
-          <Image
-            src="/images/AmyJair.jpeg"
-            alt="Amy y Jair"
-            width={280}
-            height={360}
-            style={{ objectFit: 'cover', borderRadius: '4px', maxHeight: '320px', width: 'auto' }}
-          />
-        </div>
-      )}
-
       {/* ── CONTENT ── */}
+      <div style={{ background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(2px)' }}>
       <div className="max-w-5xl mx-auto pb-36">
         {!loading && photos.length > 0 && (
           <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
@@ -77,6 +71,7 @@ export default function Home() {
         )}
 
         <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
+      </div>
       </div>
 
       {/* ── FLOATING FOOTER ── */}
