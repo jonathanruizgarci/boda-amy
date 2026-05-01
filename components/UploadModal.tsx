@@ -195,14 +195,27 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
 
                     {/* Progress */}
                     {isUploading && (
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
-                                <span>Subiendo {currentIndex + 1} de {files.length}…</span>
-                                <span>{doneCount}/{files.length}</span>
+                        <div style={{ background: '#fdf5fe', border: '1px solid rgba(196,168,216,0.35)', borderRadius: '14px', padding: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
+                                <span style={{ fontSize: '0.82rem', color: '#b5476a', fontWeight: 600 }}>
+                                    Subiendo {currentIndex + 1} de {files.length}…
+                                </span>
+                                <span style={{ fontSize: '1rem', fontWeight: 700, color: '#b5476a' }}>
+                                    {Math.round((doneCount / files.length) * 100)}%
+                                </span>
                             </div>
-                            <div style={{ height: '2px', background: '#f0f0f0', borderRadius: '1px' }}>
-                                <div style={{ height: '100%', background: 'var(--text)', borderRadius: '1px', width: `${(doneCount / files.length) * 100}%`, transition: 'width 0.4s ease' }} />
+                            <div style={{ height: '8px', background: '#f0e6f6', borderRadius: '4px', overflow: 'hidden' }}>
+                                <div style={{
+                                    height: '100%',
+                                    background: 'linear-gradient(to right, #d499dc, #b5476a)',
+                                    borderRadius: '4px',
+                                    width: `${(doneCount / files.length) * 100}%`,
+                                    transition: 'width 0.4s ease',
+                                }} />
                             </div>
+                            <p style={{ fontSize: '0.7rem', color: '#c4a8d8', marginTop: '8px', textAlign: 'center' }}>
+                                {doneCount} de {files.length} {files.length === 1 ? 'foto lista' : 'fotos listas'}
+                            </p>
                         </div>
                     )}
 

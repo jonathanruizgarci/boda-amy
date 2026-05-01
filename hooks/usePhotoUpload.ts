@@ -4,10 +4,11 @@ import { useState } from 'react'
 import imageCompression from 'browser-image-compression'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
 
-const MAX_FILE_SIZE_MB = 8
+const MAX_FILE_SIZE_MB = 12
 const COMPRESSION_OPTIONS = {
-    maxSizeMB: 3,
+    maxSizeMB: 10,
     maxWidthOrHeight: 4096,
+    initialQuality: 0.95,
     useWebWorker: true,
 }
 

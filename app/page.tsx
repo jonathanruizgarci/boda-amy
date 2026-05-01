@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <main style={{
       minHeight: '100dvh',
-      backgroundImage: 'url(/images/AmyJair.jpeg)',
+      backgroundImage: 'url(/images/AmyJair.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center top',
       backgroundAttachment: 'fixed',
@@ -33,9 +33,9 @@ export default function Home() {
       {/* ── BLUR OVERLAY ── */}
       <div style={{
         position: 'fixed', inset: 0, zIndex: 0,
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        background: 'rgba(255,255,255,0.35)',
+        backdropFilter: 'blur(1.5px)',
+        WebkitBackdropFilter: 'blur(1.5px)',
+        background: 'rgba(255,255,255,0.78)',
       }} />
 
       {/* todo el contenido va sobre el overlay */}
@@ -83,8 +83,8 @@ export default function Home() {
             borderRadius: '20px',
             padding: '40px 32px',
             textAlign: 'center',
-            maxWidth: '320px',
-            width: '85%',
+            maxWidth: '240px',
+            width: '70%',
             boxShadow: '0 8px 32px rgba(180,160,210,0.12)',
           }}>
             <p className="font-playfair" style={{ fontSize: '1.6rem', fontStyle: 'italic', color: '#b5476a', marginBottom: '10px' }}>
@@ -94,6 +94,9 @@ export default function Home() {
             <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: '#444' }}>
               Comparte un momento especial del gran día tocando el botón de abajo.
             </p>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <Image src="/images/camara.jpg" alt="Cámara" width={80} height={80} style={{ objectFit: 'contain' }} />
+            </div>
           </div>
         </div>
       ) : (
