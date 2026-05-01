@@ -56,7 +56,7 @@ export default function Home() {
       </div>
 
       {/* ── CONTENT ── */}
-      <div style={{ background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(2px)' }}>
+      <div style={{ background: 'rgba(255,255,255,0.52)' }}>
       <div className="max-w-5xl mx-auto pb-36">
         {!loading && photos.length > 0 && (
           <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
