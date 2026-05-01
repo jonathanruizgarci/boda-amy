@@ -29,7 +29,7 @@ export default function Home() {
       <header style={{ background: 'transparent', paddingBottom: '0' }}>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}>
           <Image
-            src="/images/FloresBoda.png"
+            src="/images/Flores_Boda.png"
             alt="Decoración floral"
             width={260}
             height={120}
