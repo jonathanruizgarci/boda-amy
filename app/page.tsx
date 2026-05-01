@@ -119,7 +119,7 @@ export default function Home() {
       {!lightboxOpen && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px',
           padding: '8px 20px 12px',
           background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
@@ -130,7 +130,7 @@ export default function Home() {
             alt="Wedding photography"
             width={100}
             height={52}
-            style={{ objectFit: 'contain', width: 'auto', height: '48px' }}
+            style={{ objectFit: 'contain', width: 'auto', height: '58px' }}
           />
           <UploadButton onClick={() => setModalOpen(true)} />
         </div>
