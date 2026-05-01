@@ -133,7 +133,7 @@ export function UploadModal({ isOpen, onClose, onUploadComplete }: UploadModalPr
                         >
                             <ImagePlus size={28} color="#aaa" strokeWidth={1.5} />
                             <span style={{ fontSize: '0.82rem', color: '#aaa' }}>Toca para elegir fotos</span>
-                            <span style={{ fontSize: '0.68rem', color: '#c8c8c8' }}>Solo imágenes · Máx. 2 MB cada una</span>
+                            <span style={{ fontSize: '0.68rem', color: '#c8c8c8' }}>Solo imágenes · Alta calidad</span>
                         </button>
                     ) : (
                         <div>

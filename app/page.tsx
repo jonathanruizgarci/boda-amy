@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { usePhotos } from '@/hooks/usePhotos'
 import { PhotoGrid } from '@/components/PhotoGrid'
 import { UploadButton } from '@/components/UploadButton'
@@ -23,33 +24,45 @@ export default function Home() {
         className="sticky top-0 z-40"
         style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border)' }}
       >
-        <div className="max-w-5xl mx-auto px-5" style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="max-w-5xl mx-auto px-5" style={{ height: '88px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-          {/* Names — elegant serif */}
-          <div style={{ lineHeight: 1 }}>
-            <h1
-              className="font-playfair"
-              style={{ fontSize: '1.5rem', fontWeight: 400, letterSpacing: '0.03em', color: 'var(--text)', fontStyle: 'italic' }}
-            >
-              Amy <span style={{ fontStyle: 'normal', fontWeight: 300, opacity: 0.35, margin: '0 4px' }}>&</span> Jair
-            </h1>
+          {/* Spacer */}
+          <div style={{ width: '72px' }} />
+
+          {/* Floral decoration — centered */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <Image
+              src="/images/Flores_Boda.jpeg"
+              alt="Decoración floral"
+              width={320}
+              height={88}
+              style={{ objectFit: 'contain', height: '72px', width: 'auto' }}
+              priority
+            />
           </div>
 
-          {/* Live indicator */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontSize: '0.7rem', letterSpacing: '0.12em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>En vivo</span>
-          </div>
+          {/* Spacer */}
+          <div style={{ width: '72px' }} />
         </div>
       </header>
 
       {/* ── THIN RULE ── */}
       <div style={{ height: '1px', background: 'var(--border)', opacity: 0.5 }} />
 
+      {/* ── AMY & JAIR ── */}
+      <div style={{ textAlign: 'center', padding: '28px 0 6px' }}>
+        <h1
+          className="font-playfair"
+          style={{ fontSize: '2.2rem', fontWeight: 400, letterSpacing: '0.04em', color: 'var(--text)', fontStyle: 'italic' }}
+        >
+          Amy <span style={{ fontStyle: 'normal', fontWeight: 300, opacity: 0.3, margin: '0 8px' }}>&</span> Jair
+        </h1>
+      </div>
+
       {/* ── CONTENT ── */}
       <div className="max-w-5xl mx-auto pb-28">
         {!loading && photos.length > 0 && (
-          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '18px 0 8px', textTransform: 'uppercase' }}>
+          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
             {photos.length} {photos.length === 1 ? 'momento' : 'momentos'} · toca para ampliar
           </p>
         )}
