@@ -31,12 +31,12 @@ export default function Home() {
             priority
           />
         </div>
-        {/* Línea degradada lila */}
-        <div style={{
-          height: '2px',
-          background: 'linear-gradient(to right, transparent, #c4a8d8, transparent)',
-          margin: '10px 0 0',
-        }} />
+        {/* Línea degradada lila con corazón */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', margin: '10px 0 0' }}>
+          <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, #c4a8d8)' }} />
+          <span style={{ fontSize: '0.9rem', color: '#c4a8d8', padding: '0 8px', lineHeight: 1 }}>♥</span>
+          <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, #c4a8d8)' }} />
+        </div>
       </header>
 
       {/* ── AMY & JAIR ── */}
