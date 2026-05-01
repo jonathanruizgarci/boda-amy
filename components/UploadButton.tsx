@@ -15,7 +15,7 @@ export function UploadButton({ onClick, disabled }: UploadButtonProps) {
             aria-label="Subir foto"
             style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                background: '#c4a8d8', color: '#000000',
+                background: '#d499dc', color: '#000000',
                 padding: '12px 22px', borderRadius: '100px',
                 border: 'none', cursor: 'pointer',
                 fontSize: '0.8rem', fontWeight: 500,

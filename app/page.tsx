@@ -125,13 +125,6 @@ export default function Home() {
           WebkitBackdropFilter: 'blur(10px)',
           borderTop: '1px solid rgba(0,0,0,0.06)',
         }}>
-          <Image
-            src="/images/camara.jpg"
-            alt="Wedding photography"
-            width={100}
-            height={52}
-            style={{ objectFit: 'contain', width: 'auto', height: '58px' }}
-          />
           <UploadButton onClick={() => setModalOpen(true)} />
         </div>
       )}
