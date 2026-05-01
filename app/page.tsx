@@ -27,7 +27,19 @@ export default function Home() {
       backgroundAttachment: 'fixed',
       display: 'flex',
       flexDirection: 'column',
+      position: 'relative',
     }}>
+
+      {/* ── BLUR OVERLAY ── */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 0,
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        background: 'rgba(255,255,255,0.35)',
+      }} />
+
+      {/* todo el contenido va sobre el overlay */}
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
 
       {/* ── HEADER ── */}
       <header style={{ background: 'transparent', paddingBottom: '0', flexShrink: 0 }}>
@@ -134,6 +146,8 @@ export default function Home() {
           onNavigate={setLightboxIndex}
         />
       )}
+
+      </div>{/* end relative content wrapper */}
     </main>
   )
 }
