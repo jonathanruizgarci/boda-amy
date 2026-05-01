@@ -16,17 +16,21 @@ export default function Home() {
   const handleUploadComplete = () => setTimeout(() => refetch(), 800)
   const lightboxOpen = lightboxIndex !== null
 
+  const isEmpty = !loading && photos.length === 0
+
   return (
-    <main className="min-h-screen" style={{
-      background: 'var(--bg)',
+    <main style={{
+      minHeight: '100dvh',
       backgroundImage: 'url(/images/AmyJair.jpeg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center top',
       backgroundAttachment: 'fixed',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
 
       {/* ── HEADER ── */}
-      <header style={{ background: 'transparent', paddingBottom: '0' }}>
+      <header style={{ background: 'transparent', paddingBottom: '0', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '16px' }}>
           <Image
             src="/images/Flores_Boda.png"
@@ -46,7 +50,7 @@ export default function Home() {
       </header>
 
       {/* ── AMY & JAIR ── */}
-      <div style={{ textAlign: 'center', padding: '24px 0 16px' }}>
+      <div style={{ textAlign: 'center', padding: '20px 0 12px', flexShrink: 0 }}>
         <h1
           className="font-playfair"
           style={{ fontSize: '2.6rem', fontWeight: 400, letterSpacing: '0.04em', color: '#b5476a', fontStyle: 'italic' }}
@@ -56,23 +60,44 @@ export default function Home() {
       </div>
 
       {/* ── CONTENT ── */}
-      <div style={{ background: 'rgba(255,255,255,0.52)' }}>
-      <div className="max-w-5xl mx-auto pb-36">
-        {!loading && photos.length > 0 && (
-          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
-            {photos.length} {photos.length === 1 ? 'momento' : 'momentos'} · toca para ampliar
-          </p>
-        )}
-
-        {error && (
-          <div style={{ margin: '12px 16px', padding: '12px', border: '1px solid #e5e5e5', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-            {error}
+      {isEmpty ? (
+        /* Estado vacío: centrado en pantalla completa */
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0 120px' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.55)',
+            borderRadius: '16px',
+            padding: '36px 32px',
+            textAlign: 'center',
+            maxWidth: '320px',
+            width: '85%',
+          }}>
+            <p className="font-playfair" style={{ fontSize: '1.6rem', fontStyle: 'italic', color: '#b5476a', marginBottom: '10px' }}>
+              Sé el primero
+            </p>
+            <div style={{ width: '32px', height: '1px', background: '#d4a8b8', margin: '0 auto 14px' }} />
+            <p style={{ fontSize: '0.9rem', lineHeight: 1.6, color: '#444' }}>
+              Comparte un momento especial del gran día tocando el botón de abajo.
+            </p>
           </div>
-        )}
-
-        <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
-      </div>
-      </div>
+        </div>
+      ) : (
+        /* Con fotos: grid normal */
+        <div style={{ background: 'rgba(255,255,255,0.52)', flex: 1 }}>
+          <div className="max-w-5xl mx-auto pb-36">
+            {!loading && (
+              <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
+                {photos.length} {photos.length === 1 ? 'momento' : 'momentos'} · toca para ampliar
+              </p>
+            )}
+            {error && (
+              <div style={{ margin: '12px 16px', padding: '12px', border: '1px solid #e5e5e5', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                {error}
+              </div>
+            )}
+            <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
+          </div>
+        </div>
+      )}
 
       {/* ── FLOATING FOOTER ── */}
       {!lightboxOpen && (
