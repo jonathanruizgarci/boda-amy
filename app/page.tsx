@@ -21,10 +21,7 @@ export default function Home() {
   return (
     <main style={{
       minHeight: '100dvh',
-      backgroundImage: 'url(/images/AmyJair.jpeg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center top',
-      backgroundAttachment: 'fixed',
+      background: 'linear-gradient(160deg, #f5f0fb 0%, #fdf8f0 60%, #f0eef8 100%)',
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -64,12 +61,16 @@ export default function Home() {
         /* Estado vacío: centrado en pantalla completa */
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0 120px' }}>
           <div style={{
-            background: 'rgba(255,255,255,0.55)',
-            borderRadius: '16px',
-            padding: '36px 32px',
+            background: 'rgba(255,255,255,0.45)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(196,168,216,0.25)',
+            borderRadius: '20px',
+            padding: '40px 32px',
             textAlign: 'center',
             maxWidth: '320px',
             width: '85%',
+            boxShadow: '0 8px 32px rgba(180,160,210,0.12)',
           }}>
             <p className="font-playfair" style={{ fontSize: '1.6rem', fontStyle: 'italic', color: '#b5476a', marginBottom: '10px' }}>
               Sé el primero
