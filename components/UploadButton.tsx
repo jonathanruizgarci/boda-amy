@@ -13,24 +13,21 @@ export function UploadButton({ onClick, disabled }: UploadButtonProps) {
             onClick={onClick}
             disabled={disabled}
             aria-label="Subir foto"
-            className="
-        fixed bottom-6 right-6 z-50
-        flex items-center gap-2.5
-        bg-gradient-to-br from-rose-500 to-pink-600
-        text-white
-        px-5 py-4 rounded-full
-        shadow-lg shadow-rose-500/40
-        hover:shadow-xl hover:shadow-rose-500/50
-        hover:scale-105
-        active:scale-95
-        transition-all duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
-        font-semibold text-sm
-        border border-rose-400/30
-      "
+            style={{
+                position: 'fixed', bottom: '24px', right: '20px', zIndex: 50,
+                display: 'flex', alignItems: 'center', gap: '8px',
+                background: '#0a0a0a', color: '#ffffff',
+                padding: '13px 22px', borderRadius: '100px',
+                border: 'none', cursor: 'pointer',
+                fontSize: '0.8rem', fontWeight: 500, letterSpacing: '0.06em',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                transition: 'transform 0.15s, opacity 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.04)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
         >
-            <Camera className="w-5 h-5" strokeWidth={2.5} />
-            <span>Subir foto</span>
+            <Camera size={15} strokeWidth={1.8} />
+            <span style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}>Subir</span>
         </button>
     )
 }

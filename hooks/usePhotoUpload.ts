@@ -4,10 +4,10 @@ import { useState } from 'react'
 import imageCompression from 'browser-image-compression'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
 
-const MAX_FILE_SIZE_MB = 2
+const MAX_FILE_SIZE_MB = 8
 const COMPRESSION_OPTIONS = {
-    maxSizeMB: 0.3,       // ~300 KB target
-    maxWidthOrHeight: 1920,
+    maxSizeMB: 3,
+    maxWidthOrHeight: 4096,
     useWebWorker: true,
 }
 
@@ -31,8 +31,8 @@ export function usePhotoUpload() {
 
         // Validate file size before compression
         const fileSizeMB = file.size / (1024 * 1024)
-        if (fileSizeMB > MAX_FILE_SIZE_MB * 3) {
-            setError(`La imagen es demasiado grande. Máximo permitido: ${MAX_FILE_SIZE_MB * 3} MB.`)
+        if (fileSizeMB > 50) {
+            setError('La imagen es demasiado grande. Máximo permitido: 50 MB.')
             setStatus('error')
             return false
         }

@@ -1,22 +1,20 @@
 'use client'
 
-import { PhotoCard } from '@/components/PhotoCard'
 import type { Photo } from '@/types/database'
+import { PhotoCard } from '@/components/PhotoCard'
 
 interface PhotoGridProps {
     photos: Photo[]
     loading: boolean
+    onPhotoClick: (index: number) => void
 }
 
-export function PhotoGrid({ photos, loading }: PhotoGridProps) {
+export function PhotoGrid({ photos, loading, onPhotoClick }: PhotoGridProps) {
     if (loading) {
         return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 p-3">
                 {Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className="aspect-square rounded-2xl bg-rose-100/40 animate-pulse"
-                    />
+                    <div key={i} className="aspect-square animate-pulse" style={{ background: '#f0f0f0', borderRadius: '16px' }} />
                 ))}
             </div>
         )
@@ -24,20 +22,22 @@ export function PhotoGrid({ photos, loading }: PhotoGridProps) {
 
     if (photos.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
-                <div className="text-6xl mb-4 animate-bounce">💍</div>
-                <h2 className="text-2xl font-semibold text-rose-400 mb-2">¡Sé el primero!</h2>
-                <p className="text-slate-400 text-sm max-w-xs">
-                    Aún no hay fotos. Toca el botón de abajo y comparte un momento especial del gran día.
+            <div className="flex flex-col items-center justify-center py-28 px-8 text-center gap-4">
+                <p className="font-playfair text-2xl italic" style={{ color: 'var(--text)' }}>
+                    Sé el primero
+                </p>
+                <div style={{ width: '32px', height: '1px', background: 'var(--border)' }} />
+                <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>
+                    Comparte un momento especial del gran día tocando el botón de abajo.
                 </p>
             </div>
         )
     }
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 p-4">
-            {photos.map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 p-3">
+            {photos.map((photo, index) => (
+                <PhotoCard key={photo.id} photo={photo} priority={index < 4} onClick={() => onPhotoClick(index)} />
             ))}
         </div>
     )
