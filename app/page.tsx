@@ -57,7 +57,7 @@ export default function Home() {
       )}
 
       {/* ── CONTENT ── */}
-      <div className="max-w-5xl mx-auto pb-28">
+      <div className="max-w-5xl mx-auto pb-36">
         {!loading && photos.length > 0 && (
           <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', padding: '10px 0 8px', textTransform: 'uppercase' }}>
             {photos.length} {photos.length === 1 ? 'momento' : 'momentos'} · toca para ampliar
@@ -73,16 +73,24 @@ export default function Home() {
         <PhotoGrid photos={photos} loading={loading} onPhotoClick={(i) => setLightboxIndex(i)} />
       </div>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 100px' }}>
-        <Image
-          src="/images/camara.jpg"
-          alt="Wedding photography"
-          width={160}
-          height={160}
-          style={{ objectFit: 'contain', width: 'auto', height: '110px' }}
-        />
-      </footer>
+      {/* ── FLOATING FOOTER ── */}
+      {!lightboxOpen && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '6px 0 8px',
+          background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(10px)',
+          borderTop: '1px solid rgba(0,0,0,0.06)',
+        }}>
+          <Image
+            src="/images/camara.jpg"
+            alt="Wedding photography"
+            width={120}
+            height={60}
+            style={{ objectFit: 'contain', width: 'auto', height: '52px' }}
+          />
+        </div>
+      )}
 
       {!lightboxOpen && <UploadButton onClick={() => setModalOpen(true)} />}
 
